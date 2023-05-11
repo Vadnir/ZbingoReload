@@ -3,18 +3,18 @@ package cl.vadnir.zbingoreload.Managers
 import cl.vadnir.zbingoreload.Profiles.PlayerProfile
 import cl.vadnir.zbingoreload.Profiles.TeamProfile
 
-class TeamManager(private var teamList: ArrayList<TeamProfile> = ArrayList()) {
+class TeamManager(private var teamList: HashMap<String, TeamProfile> = hashMapOf<String, TeamProfile>()) {
 
     private fun hasTeam(teamId: String): Boolean {
-        return this.teamList.any { it.getTeamId() == teamId}
+        return this.teamList.containsKey(teamId)
     }
 
     public fun setTeams(newTeams: List<TeamProfile>){
-        this.teamList = arrayListOf(*newTeams.toTypedArray())
+        newTeams.associateByTo(this.teamList) {it.getTeamId() }
     }
 
     public fun getAllTeam(): List<TeamProfile> {
-        return this.teamList
+        return this.teamList.values.toList()
     }
 
     public fun getTeam(teamId: String): TeamProfile? {
@@ -22,7 +22,7 @@ class TeamManager(private var teamList: ArrayList<TeamProfile> = ArrayList()) {
             throw Exception("this team not exist")
         }
 
-        return this.teamList.firstOrNull { it.getTeamId() == teamId }
+        return this.teamList[teamId]
     }
 
     public fun getPlayerByTeamId(teamId: String): List<PlayerProfile>{
@@ -30,7 +30,7 @@ class TeamManager(private var teamList: ArrayList<TeamProfile> = ArrayList()) {
             throw Exception("this team not exist")
         }
 
-        return this.teamList.first { it.getTeamId() == teamId }.getPlayerList()
+        return this.teamList[teamId]!!.getPlayerList()
     }
 
     public fun addTeam(teamId: String, teamDisplayName: String) {
@@ -38,7 +38,7 @@ class TeamManager(private var teamList: ArrayList<TeamProfile> = ArrayList()) {
             throw Exception("this team exist")
         }
 
-        this.teamList.add(TeamProfile(teamId, teamDisplayName))
+        this.teamList[teamId] = TeamProfile(teamId, teamDisplayName)
     }
 
     public fun removeTeam(teamId: String) {
@@ -46,6 +46,8 @@ class TeamManager(private var teamList: ArrayList<TeamProfile> = ArrayList()) {
             throw Exception("this team not exist")
         }
 
-        this.teamList.remove(this.getTeam(teamId))
+        this.teamList.remove(teamId)
     }
 }
+
+

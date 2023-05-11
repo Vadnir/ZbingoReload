@@ -33,7 +33,7 @@ class ZBingoReload : JavaPlugin() {
 
     override fun onEnable() {
 
-        this.messageUtils =  MessageUtils(this)
+        this.messageUtils = MessageUtils(this)
         this.storageManager = StorageManager(this)
         this.advancementManager = AdvancementManager()
         this.playerManager = PlayerManager()
@@ -47,11 +47,7 @@ class ZBingoReload : JavaPlugin() {
             this.storageManager.getAdvancements()
         )
 
-        this.teamManager.setTeams(
-            this.storageManager.getAllTeamData(
-                this.advancementManager.getAllAdvancements()
-            )?: arrayListOf()
-        )
+        this.teamManager.setTeams(this.storageManager.getAllTeamData() ?: arrayListOf())
 
         //apis
         this.ultimateAdvancementAPI = AdvancementApi(plugin = this)
@@ -69,12 +65,12 @@ class ZBingoReload : JavaPlugin() {
         this.messageUtils.close()
     }
 
-    private fun registerCommands(){
+    private fun registerCommands() {
         val command = AdminCommands(this)
         //this.getCommand("bingo")?.setExecutor(AdminCommands(this))
     }
 
-    private fun registerListeners(){
+    private fun registerListeners() {
         Bukkit.getPluginManager().registerEvents(PlayerConnect(this), this)
         Bukkit.getPluginManager().registerEvents(PlayerKillMob(this), this)
         Bukkit.getPluginManager().registerEvents(PlayerCompleteAdvancement(this), this)

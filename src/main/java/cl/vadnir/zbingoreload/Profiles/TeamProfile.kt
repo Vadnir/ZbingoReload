@@ -3,7 +3,7 @@ package cl.vadnir.zbingoreload.Profiles
 class TeamProfile(
     private val teamId: String,
     private var teamNameDisplay: String = "",
-    private var advancementList: ArrayList<AdvancementProfile> = arrayListOf(),
+    private var advancementList: ArrayList<String> = arrayListOf(),
     private var playerList: ArrayList<PlayerProfile> = arrayListOf()) {
 
     public override fun toString(): String {
@@ -18,7 +18,7 @@ class TeamProfile(
         return this.teamNameDisplay
     }
 
-    public fun getAdvancementList(): List<AdvancementProfile> {
+    public fun getAdvancementList(): List<String> {
         return this.advancementList.toList()
     }
 
@@ -26,15 +26,16 @@ class TeamProfile(
         return this.playerList.toList()
     }
 
-    public fun getPoints(): Int {
-        return this.advancementList.sumOf { it.getPoints() }
+    public fun getPoints(advancement: List<AdvancementProfile>): Int {
+
+        return advancement.filter { this.advancementList.contains(it.getName()) }.sumOf { it.getPoints() }
     }
 
     public fun setTeamNameDisplay(newTeamNameDisplay: String) {
         this.teamNameDisplay = newTeamNameDisplay
     }
 
-    public fun setAdvancementList(newAdvancementList: List<AdvancementProfile>) {
+    public fun setAdvancementList(newAdvancementList: List<String>) {
         this.advancementList = arrayListOf(*newAdvancementList.toTypedArray())
     }
 
@@ -46,20 +47,34 @@ class TeamProfile(
         return this.playerList.any { it.getName() == player.getName() }
     }
 
-    public fun hasAdvancement(advancement: AdvancementProfile): Boolean {
-        return this.advancementList.any {it.getName() == advancement.getName() }
+    public fun hasAdvancement(advancement: String): Boolean {
+        return this.advancementList.any {it == advancement }
     }
+
+    public fun hasAdvancement(advancement: AdvancementProfile): Boolean {
+        return this.advancementList.any {it == advancement.getName() }
+    }
+
 
     public fun addPlayer(player: PlayerProfile) {
         if (this.hasPlayer(player)) {
             throw Exception("This player is on this team")
         }
 
-        if (player.getTeamId()!!.isEmpty()){
+        if (player.getTeamId() != ""){
             throw Exception("This player has a team")
         }
 
+        player.setTeamId(this.teamId)
         this.playerList.add(player)
+    }
+
+    public fun addAdvancement(advancement: String) {
+        if(this.hasAdvancement(advancement)){
+            throw Exception("this team has the same advancement")
+        }
+
+        this.advancementList.add(advancement)
     }
 
     public fun addAdvancement(advancement: AdvancementProfile) {
@@ -67,7 +82,7 @@ class TeamProfile(
             throw Exception("this team has the same advancement")
         }
 
-        this.advancementList.add(advancement)
+        this.advancementList.add(advancement.getName())
     }
 
     public fun removePlayer(player: PlayerProfile) {
@@ -78,12 +93,21 @@ class TeamProfile(
         this.playerList.remove(player)
     }
 
-    public fun removeAdvancement(advancement: AdvancementProfile) {
+    public fun removeAdvancement(advancement: String) {
         if(!this.hasAdvancement(advancement)){
             throw Exception("this team not has the same advancement")
         }
 
         this.advancementList.remove(advancement)
     }
+
+    public fun removeAdvancement(advancement: AdvancementProfile) {
+        if(!this.hasAdvancement(advancement)){
+            throw Exception("this team not has the same advancement")
+        }
+
+        this.advancementList.remove(advancement.getName())
+    }
+
 
 }

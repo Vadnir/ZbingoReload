@@ -8,6 +8,7 @@ import dev.jorel.commandapi.arguments.*
 import dev.jorel.commandapi.executors.CommandExecutor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 
 class AdminCommands(private val plugin: ZBingoReload) {
@@ -16,123 +17,87 @@ class AdminCommands(private val plugin: ZBingoReload) {
         this.registerCommand()
     }
 
-    private fun registerCommand(){
+    private fun getPlayerArgument(): Argument<String>? {
+        return StringArgument("players").replaceSuggestions(
+            ArgumentSuggestions.strings {
+                this.plugin.getPlayerManager().getAllPlayers(). map {
+                    it.getName() } .toTypedArray()
+            }
+        )
+    }
 
-        CommandAPICommand("bingo")
-            .withSubcommand(CommandAPICommand("team")
-                    .withSubcommand(CommandAPICommand("chunk")
-                        .withArguments(IntegerArgument("number"))
-                        .executes(CommandExecutor { sender: CommandSender?, args: Array<Any> ->
-                            run {
-                                val players = this.plugin.getPlayerManager().getAllPlayers()
-                                val playerTeams: List<List<PlayerProfile>> =
-                                    players.chunked(args[0].toString().toInt()).toList()
-                                val teamProfiles = arrayListOf<TeamProfile>()
-                                for (teams: List<PlayerProfile> in playerTeams)
-                                    teamProfiles.add(
-                                        TeamProfile(
-                                            teams[0].toString(),
-                                            teams[0].toString(),
-                                            playerList = arrayListOf(*teams.toTypedArray())
-                                        )
-                                    )
-                                this.plugin.getTeamManager().setTeams(
-                                    teamProfiles
-                                )
-                            }
-                        }
-                        )
-                    )
-                    .withSubcommand(CommandAPICommand("list")
-                        .withArguments(
-                            StringArgument("teams").replaceSuggestions(
-                                ArgumentSuggestions.strings {
-                                    this.plugin.getTeamManager().getAllTeam().map { it.getTeamId() }
-                                        .toTypedArray() }))
-                        .executes(CommandExecutor {
-                                sender: CommandSender?, args: Array<Any> -> sender!!.sendMessage(
-                            this.plugin.getTeamManager().getTeam(args[0].toString())!!.getPlayerList().toString()) }
-                        )
-                    )
-                    .withSubcommand(CommandAPICommand("create")
-                            .withArguments(StringArgument("teamId"))
-                            .withArguments(StringArgument("teamDisplay"))
-                            .executes(CommandExecutor {
-                                    _: CommandSender?, args: Array<Any> -> this.plugin.getTeamManager()
-                                        .addTeam(args[0].toString(), args[1].toString()) }
-                            )
-                    )
-                    .withSubcommand(CommandAPICommand("add")
-                            .withArguments(EntitySelectorArgument.ManyPlayers("players"))
-                            .withArguments(
-                                StringArgument("teams").replaceSuggestions(
-                                    ArgumentSuggestions.strings {
-                                        this.plugin.getTeamManager().getAllTeam().map { it.getTeamId() }
-                                            .toTypedArray()
-                                    }
-                                )
-                            )
-                            .executes(CommandExecutor { sender: CommandSender?, args: Array<Any> ->
-                                run {
+    private fun getTeamArgument(): Argument<String>? {
+        return StringArgument("teams").replaceSuggestions(
+            ArgumentSuggestions.strings {
+                this.plugin.getTeamManager().getAllTeam(). map {
+                    it.getTeamId() } .toTypedArray()
+            }
+        )
+    }
 
-                                    sender!!.sendMessage(args.toString())
+    private fun getAdvancementArgument(): Argument<String>? {
+        return StringArgument("advancements").replaceSuggestions(
+            ArgumentSuggestions.strings {
+                this.plugin.getAdvancementManager().getAllAdvancements(). map {
+                    it.getName() } .toTypedArray()
+            }
+        )
+    }
 
-                                    this.plugin.getTeamManager().getTeam(args[1].toString())!!
-                                        .addPlayer(
-                                            this.plugin.getPlayerManager().getPlayer(args[0].toString())
-                                                ?: throw Exception("no player")
-                                        )
+    private fun listCommands(): CommandAPICommand {
+        return CommandAPICommand("list")
+            .withArguments(MultiLiteralArgument("players", "teams", "advancements"))
+            .executes(CommandExecutor
+            { sender: CommandSender?, args: Array<Any> ->
+                when (args[0]) {
+                    "players" -> sender!!.sendMessage(
+                        this.plugin.getPlayerManager().getAllPlayers().toString()
+                    )
 
-                                }
-                            }
-                            )
+                    "teams" -> sender!!.sendMessage(
+                        this.plugin.getTeamManager().getAllTeam().toString()
                     )
-                    .withSubcommand(CommandAPICommand("remove")
-                        .withArguments(EntitySelectorArgument.ManyPlayers("players"))
-                        .withArguments(
-                            StringArgument("teams").replaceSuggestions(
-                                ArgumentSuggestions.strings {
-                                    this.plugin.getTeamManager().getAllTeam().map { it.getTeamNameDisplay() }
-                                        .toTypedArray()
-                                }
-                            )
-                        )
-                        .executes(CommandExecutor {
-                                _: CommandSender?, args: Array<Any> -> this.plugin.getTeamManager().getTeam(args[1].toString())!!
-                            .removePlayer(
-                                this.plugin.getPlayerManager().getPlayer(args[0].toString())?: throw Exception("no player")
-                            ) }
-                        )
+
+                    "advancements" -> sender!!.sendMessage(
+                        this.plugin.getAdvancementManager().getAllAdvancements().toString()
                     )
+                }
+            }
             )
-            .withSubcommand(CommandAPICommand("player")
-                .withSubcommand(CommandAPICommand("create")
-                    .withArguments(EntitySelectorArgument.ManyPlayers("players"))
-                    .executes(CommandExecutor { _: CommandSender?, args: Array<Any> -> this.plugin.getPlayerManager().createPlayer(args[0].toString()) }
-                    )
+    }
+
+    private fun playerCommands(): CommandAPICommand {
+        return CommandAPICommand("player")
+            .withSubcommand(CommandAPICommand("create")
+                .withArguments(
+                    this.getPlayerArgument()
                 )
-                .withSubcommand(CommandAPICommand("team")
-                    .withArguments(EntitySelectorArgument.ManyPlayers("players"))
-                    .executes(CommandExecutor { sender: CommandSender?, args: Array<Any> -> sender!!.sendMessage(
-                        this.plugin.getPlayerManager().getPlayer(args[0].toString())!!.getTeamId()!!) })
-                )
-            )
-            .withSubcommand(CommandAPICommand("list")
-                .withArguments(MultiLiteralArgument("players", "teams", "advancements"))
-                .executes(CommandExecutor { sender: CommandSender?, args: Array<Any> ->
-                    when (args[0]) {
-                        "players" -> sender!!.sendMessage(
-                            this.plugin.getPlayerManager().getAllPlayers().toString()
-                        )
-                        "teams" -> sender!!.sendMessage(
-                            this.plugin.getTeamManager().getAllTeam().toString()
-                        )
-                        "advancements" -> sender!!.sendMessage(
-                            this.plugin.getAdvancementManager().getAllAdvancements().toString()
-                        )
-                    }
+                .executes(CommandExecutor{
+                    sender: CommandSender?, args: Array<Any> -> run {
+                        this.plugin.getPlayerManager().createPlayer(args[0].toString())
+                }
                 })
             )
-        .register()
+            .withSubcommand(CommandAPICommand("team")
+                .withArguments(
+                    this.getPlayerArgument()
+                )
+                .executes(CommandExecutor { sender: CommandSender?, args: Array<Any> ->
+                    sender!!.sendMessage(
+                        this.plugin.getPlayerManager().getPlayer(args[0].toString())!!.getTeamId()) }
+                )
+            )
+    }
+
+
+    private fun registerCommand() {
+
+        CommandAPICommand("bingo")
+            .withSubcommand(TeamCommands(this.plugin).getTeamCommands())
+            .withSubcommand(this.playerCommands())
+            .withSubcommand(this.listCommands())
+            .register()
     }
 }
+
+

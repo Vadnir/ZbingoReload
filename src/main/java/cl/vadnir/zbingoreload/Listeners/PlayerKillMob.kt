@@ -12,38 +12,35 @@ import org.bukkit.event.entity.EntityDeathEvent
 
 class PlayerKillMob(private val plugin: ZBingoReload) : Listener {
 
-    private val advancements: List<AdvancementProfile> = this.plugin.getAdvancementManager().getAdvancementByType(
-        AdvancementTypes.Mobs)
-
     @EventHandler
-    public fun onEntityDeath(event: EntityDeathEvent){
+    public fun onEntityDeath(event: EntityDeathEvent) {
 
-        val entityType: String = event.entityType.name
-
-        if(event.entity.killer == null){
+        if (event.entity.killer == null) {
             return
         }
 
         val player: PlayerProfile = this.plugin.getPlayerManager()
             .getPlayer(event.entity.killer!!) ?: return
 
-        if((this.advancements.filter { it.getCondition() == entityType }).isEmpty()){
+        if (player.getTeamId() == "") {
             return
         }
 
         val team: TeamProfile = this.plugin.getTeamManager().getTeam(
-            player.getTeamId()!!)?: return
+            player.getTeamId()
+        ) ?: return
 
         val advancement: AdvancementProfile = this.plugin.getAdvancementManager().getAdvancement(
-            event.entity.type.toString(), AdvancementTypes.Mobs) ?: return
+            event.entity.type.toString(), AdvancementTypes.Mobs
+        ) ?: return
 
-        if(team.hasAdvancement(advancement)){
+        if (team.hasAdvancement(advancement)) {
             return
         }
+
         team.addAdvancement(advancement)
-        //todo: añadir sistema para dar el mns logro al jugador
-        team.getPlayerList().forEach {
-            Bukkit.getPlayer(it.getName())?.let { it ->
+        team.getPlayerList().forEach { it ->
+            Bukkit.getPlayer(it.getName())?.let {
                 this.plugin.getUltimateAdvancementAPI().getApi().getAdvancement(
                     "bingo:${advancement.getName()}"
                 )!!.grant(

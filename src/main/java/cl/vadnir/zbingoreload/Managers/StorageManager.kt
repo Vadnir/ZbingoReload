@@ -22,8 +22,8 @@ class StorageManager(private val plugin: ZBingoReload) {
         return this.teamStorage.getTeamProfile(teamId)
     }
 
-    public fun getAllTeamData(advancementList: List<AdvancementProfile>): List<TeamProfile>? {
-        return this.teamStorage.getAllTeams(advancementList)
+    public fun getAllTeamData(): List<TeamProfile>? {
+        return this.teamStorage.getAllTeams()
     }
 
     public fun getAdvancements(): List<AdvancementProfile> {

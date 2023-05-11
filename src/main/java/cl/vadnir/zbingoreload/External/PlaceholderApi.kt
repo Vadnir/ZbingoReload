@@ -32,7 +32,7 @@ class PlaceholderApi(private val plugin: ZBingoReload): PlaceholderExpansion() {
             "points" -> {
                 return this.plugin.getTeamManager().getTeam(
                     this.plugin.getPlayerManager().getPlayer(player!!.name!!)!!.getTeamId()?: return ""
-                )!!.getPoints().toString()
+                )!!.getPoints(this.plugin.getAdvancementManager().getAllAdvancements()).toString()
             }
         }
 
