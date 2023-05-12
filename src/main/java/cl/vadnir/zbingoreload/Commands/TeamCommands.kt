@@ -203,7 +203,7 @@ class TeamCommands(private val plugin: ZBingoReload) {
 
     private fun teamDeleteCommand(): CommandAPICommand{
         return CommandAPICommand("delete")
-            .withArguments(getAdvancementArgument(this.plugin))
+            .withArguments(getTeamArgument(this.plugin))
             .executes(
                 CommandExecutor { _: CommandSender?, args: Array<Any> -> run {
                     val team = this.plugin.getTeamManager().getTeam(args[0].toString())?: throw Exception("some error")
