@@ -2,6 +2,7 @@ package cl.vadnir.zbingoreload.Storage
 
 import cl.vadnir.zbingoreload.Profiles.PlayerProfile
 import de.leonhard.storage.Yaml
+import org.bukkit.Bukkit
 
 class PlayerStorage(private val basePath: String) {
 
@@ -18,7 +19,7 @@ class PlayerStorage(private val basePath: String) {
         }
         return PlayerProfile(
             this.playersDataFile.getString("players.${playerName}.name"),
-            this.playersDataFile.getString("players.${playerName}.teamId")
+            this.playersDataFile.getString("players.${playerName}.team_name")
         )
     }
 

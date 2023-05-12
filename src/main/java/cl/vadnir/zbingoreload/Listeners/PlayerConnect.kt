@@ -12,6 +12,9 @@ class PlayerConnect(private val plugin: ZBingoReload) : Listener {
 
     @EventHandler
     public fun onPlayerJoinEvent(event: PlayerJoinEvent) {
+
+        this.plugin.getUltimateAdvancementAPI().getApi().updatePlayer(event.player)
+
         if(this.plugin.getStorageManager().getPlayerData(event.player.name) == null){
             this.plugin.getPlayerManager().createPlayer(event.player)
         }else {
@@ -28,7 +31,6 @@ class PlayerConnect(private val plugin: ZBingoReload) : Listener {
                player
             )
         }
-        this.plugin.getUltimateAdvancementAPI().getApi().updatePlayer(event.player)
     }
 
     @EventHandler

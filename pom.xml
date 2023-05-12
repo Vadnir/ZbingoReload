@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cl.vadnir</groupId>
-    <artifactId>ZBingoReload</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>ZBingoReloaded</artifactId>
+    <version>release-1.0</version>
     <packaging>jar</packaging>
 
     <name>ZBingoReload</name>

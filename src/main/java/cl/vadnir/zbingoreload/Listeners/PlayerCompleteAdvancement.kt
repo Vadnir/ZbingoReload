@@ -12,30 +12,30 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent
 
 class PlayerCompleteAdvancement(private val plugin: ZBingoReload): Listener {
 
-    private val advancements: List<AdvancementProfile> = this.plugin.getAdvancementManager()
-        .getAdvancementByType(AdvancementTypes.Advancements)
 
     @EventHandler
     public fun onPlayerCompleteAdvancement(event: PlayerAdvancementDoneEvent){
 
-        val advancement_key = event.advancement.key.key
+        val advancementKey = event.advancement.key.key
 
-        if((this.advancements.filter { it.getCondition() == advancement_key }).isEmpty()){
+        val player = this.plugin.getPlayerManager().getPlayer(event.player)?: return
+
+        if (player.getTeamId() == "") {
             return
         }
 
         val team: TeamProfile = this.plugin.getTeamManager().getTeam(
-            this.plugin.getPlayerManager().getPlayer(event.player.name)!!.getTeamId()!!)?: return
+            player.getTeamId())?: return
 
         val advancement: AdvancementProfile = this.plugin.getAdvancementManager().getAdvancement(
-            advancement_key, AdvancementTypes.Advancements) ?: return
+            advancementKey, AdvancementTypes.Advancements) ?: return
 
         if(team.hasAdvancement(advancement)){
             return
         }
         team.addAdvancement(advancement)
-        team.getPlayerList().forEach {
-            Bukkit.getPlayer(it.getName())?.let { it ->
+        team.getPlayerList().forEach { it ->
+            Bukkit.getPlayer(it.getName())?.let {
                 this.plugin.getUltimateAdvancementAPI().getApi().getAdvancement(
                     "bingo:${advancement.getName()}"
                 )!!.grant(
@@ -43,6 +43,9 @@ class PlayerCompleteAdvancement(private val plugin: ZBingoReload): Listener {
                 )
             }
         }
-        this.plugin.getMessageUtils().dispatchMessage(advancement.getCompleteMessage())
+        this.plugin.getMessageUtils().completeAdvancement(advancement, team)
+        if(team.getAdvancementList().size >= this.plugin.getAdvancementManager().getAllAdvancements().size){
+            this.plugin.getMessageUtils().bingoMessage(team)
+        }
     }
 }

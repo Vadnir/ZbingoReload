@@ -6,6 +6,7 @@ import cl.vadnir.zbingoreload.External.AdvancementApi
 import cl.vadnir.zbingoreload.External.PlaceholderApi
 import cl.vadnir.zbingoreload.Listeners.*
 import cl.vadnir.zbingoreload.Managers.*
+import cl.vadnir.zbingoreload.Utils.ColorUtils
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 
 import org.bukkit.Bukkit
@@ -29,7 +30,11 @@ class ZBingoReload : JavaPlugin() {
 
     private lateinit var ultimateAdvancementAPI: AdvancementApi
 
+    public val colorUtils: ColorUtils = ColorUtils()
+
     public var debug: Boolean = false
+
+    public var seconds: Int = 0
 
     override fun onEnable() {
 

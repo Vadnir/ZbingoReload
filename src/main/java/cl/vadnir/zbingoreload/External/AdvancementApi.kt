@@ -23,10 +23,10 @@ class AdvancementApi(private val plugin: ZBingoReload) {
     private fun createRootAdvancement(): RootAdvancement {
         return RootAdvancement(this.advancementTab, "root",
             AdvancementDisplay(
-                Material.MAP, "bingo", AdvancementFrameType.CHALLENGE,
-                false, false, 0f, 0f,
-                "donde Todo Comienza", "description."),
-            "textures/block/white_concrete.png")
+                Material.MAP, "Bingo", AdvancementFrameType.CHALLENGE,
+                false, false, 0f, 3f,
+                "Donde", "Todo Comienza"),
+            "textures/block/gray_concrete.png")
     }
 
     fun registerAdvancements(advancements: List<AdvancementProfile>) {

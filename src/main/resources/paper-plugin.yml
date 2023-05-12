@@ -2,5 +2,5 @@ name: ZbingoReload
 version: '${project.version}'
 main: cl.vadnir.zbingoreload.ZBingoReload
 api-version: 1.19
-depend: [UltimateAdvancementAPI]
+depend: [UltimateAdvancementAPI, CommandAPI, PlaceholderAPI]
 softdepend: [UltimateAdvancementAPI]

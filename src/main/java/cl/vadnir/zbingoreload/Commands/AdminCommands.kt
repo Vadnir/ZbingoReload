@@ -89,6 +89,21 @@ class AdminCommands(private val plugin: ZBingoReload) {
             )
     }
 
+    private fun adminCommand(): CommandAPICommand {
+        return CommandAPICommand("admin")
+            .withSubcommand(CommandAPICommand("givealladvancements")
+                .withArguments(this.getTeamArgument())
+                .executes(CommandExecutor {sender: CommandSender?, args: Array<out Any>? -> run {
+                    val advancements = this.plugin.getAdvancementManager().getAllAdvancements()
+                    val team = this.plugin.getTeamManager().getTeam(args?.get(0)?.toString() ?: throw Exception(""))
+                    team!!.setAdvancementList(
+                        advancements.map { it.getName() }.toList()
+                    )
+                    this.plugin.getMessageUtils().bingoMessage(team)
+                } })
+            )
+    }
+
 
     private fun registerCommand() {
 
@@ -96,6 +111,7 @@ class AdminCommands(private val plugin: ZBingoReload) {
             .withSubcommand(TeamCommands(this.plugin).getTeamCommands())
             .withSubcommand(this.playerCommands())
             .withSubcommand(this.listCommands())
+            .withSubcommand(this.adminCommand())
             .register()
     }
 }

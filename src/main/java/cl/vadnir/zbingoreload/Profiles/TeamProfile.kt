@@ -4,10 +4,15 @@ class TeamProfile(
     private val teamId: String,
     private var teamNameDisplay: String = "",
     private var advancementList: ArrayList<String> = arrayListOf(),
-    private var playerList: ArrayList<PlayerProfile> = arrayListOf()) {
+    private var playerList: ArrayList<PlayerProfile> = arrayListOf(),
+    private var teamColor: String = "") {
 
     public override fun toString(): String {
         return "Team(teamId=${teamId}, teamNameDisplay=${teamNameDisplay})"
+    }
+
+    public fun getTeamColor(): String {
+        return this.teamColor
     }
 
     public fun getTeamId(): String {
@@ -29,6 +34,10 @@ class TeamProfile(
     public fun getPoints(advancement: List<AdvancementProfile>): Int {
 
         return advancement.filter { this.advancementList.contains(it.getName()) }.sumOf { it.getPoints() }
+    }
+
+    public fun setTeamColor(newTeamColor: String) {
+        this.teamColor = newTeamColor
     }
 
     public fun setTeamNameDisplay(newTeamNameDisplay: String) {
@@ -61,7 +70,7 @@ class TeamProfile(
             throw Exception("This player is on this team")
         }
 
-        if (player.getTeamId() != ""){
+        if (player.getTeamId() != "" &&  player.getTeamId() != this.teamId){
             throw Exception("This player has a team")
         }
 

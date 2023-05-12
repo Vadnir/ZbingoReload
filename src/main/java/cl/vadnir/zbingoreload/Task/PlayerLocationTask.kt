@@ -40,7 +40,11 @@ class PlayerLocationTask(private var plugin: ZBingoReload) {
                         )
                     }
                 }
-                this.plugin.getMessageUtils().dispatchMessage(advancement.getCompleteMessage())
+
+                this.plugin.getMessageUtils().completeAdvancement(advancement, team)
+                if(team.getAdvancementList().size >= this.plugin.getAdvancementManager().getAllAdvancements().size){
+                    this.plugin.getMessageUtils().bingoMessage(team)
+                }
             }
         }, 0L, 40L)
     }

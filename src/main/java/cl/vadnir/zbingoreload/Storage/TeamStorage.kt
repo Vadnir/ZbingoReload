@@ -47,8 +47,10 @@ class TeamStorage(private val basePath: String) {
     public fun getAllTeams(): ArrayList<TeamProfile>? {
         val teams: ArrayList<TeamProfile> = ArrayList()
 
+        Bukkit.getConsoleSender().sendMessage(this.teamsDataFile.getMapParameterized<String, Any>("teams").keys.toString())
         for (team: String in this.teamsDataFile.getMapParameterized<String, Any>("teams").keys){
             val teamProfile = this.getTeamProfile(team)?:continue
+            Bukkit.getConsoleSender().sendMessage(teamProfile.toString())
             teams.add(teamProfile)
         }
 

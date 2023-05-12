@@ -48,6 +48,9 @@ class PlayerKillMob(private val plugin: ZBingoReload) : Listener {
                 )
             }
         }
-        this.plugin.getMessageUtils().dispatchMessage(advancement.getCompleteMessage())
+        this.plugin.getMessageUtils().completeAdvancement(advancement, team)
+        if(team.getAdvancementList().size >= this.plugin.getAdvancementManager().getAllAdvancements().size){
+            this.plugin.getMessageUtils().bingoMessage(team)
+        }
     }
 }
